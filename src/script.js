@@ -7,7 +7,7 @@ let currsongs = new Audio();
 
 function getname(names) {
     let newele = decodeURI(names);
-    let temp = `/songs/${currFolder}/`;
+    let temp = `https://github.com/anuplohar001/BeatBox/tree/c357a8a18aa0073ac03790311fba76574e8a5f3c/songs/${currFolder}/`;
     let news = newele.replace(temp, " ");
     return news;
 }
@@ -31,7 +31,7 @@ function secondsToMinutesSeconds(seconds) {
 
 async function getSongs(folder) {
     currFolder = folder
-    let song = await fetch(`/songs/${folder}/`);
+    let song = await fetch(`https://github.com/anuplohar001/BeatBox/tree/c357a8a18aa0073ac03790311fba76574e8a5f3c/songs/${folder}/`);
 
     let respons = await song.text();
     let div = document.createElement("div");
@@ -70,7 +70,7 @@ function playselect(songs) {
 
 async function dynamicAlbums() {
 
-    let song = await fetch(`/songs`);
+    let song = await fetch(`https://github.com/anuplohar001/BeatBox/tree/c357a8a18aa0073ac03790311fba76574e8a5f3c/songs`);
 
     let respons = await song.text();
     let div = document.createElement("div");
