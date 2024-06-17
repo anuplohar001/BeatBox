@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeatBox Music Player</title>
+    <link rel="stylesheet" href="src/style.css">
+    <link rel="stylesheet" href="src/utility.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="left">
+            <div class="flex box">
+                <ul>
+                    <li class="logo flex">
+                        <img class="logo1 " src="svg\logomusic.svg" alt="">
+                        BeatBox Music
+                    </li>
+                    <li><img class="icons" src="svg\home.svg" alt="">Home</li>
+                    <li><img class="icons" src="svg\search.svg" alt="">Search</li>
+                </ul>
+
+                <img class="close" src="svg\close.svg" alt="close">
+            </div>
+            <div class="box2 flex">
+                <div class="your flex">
+                    <img class="icons" src="svg\library.svg" alt="">
+                    Your Library
+                </div>
+                <div id="aname">
+                    Album Name : Arijit Sing
+                </div>
+                <div class="songslist">
+                    <ul id="lists">
+                        <li></li>
+                    </ul>
+                </div>
+                <div>
+                    <ul class="flex aboutsec">
+                        <li>Legal</li>
+                        <li>Privacy Policy</li>
+                        <li>Cookies</li>
+                        <li>About Ads</li>
+                        <li>Accessibility</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <img class="bar" src="svg\bar.svg" alt="bar">
+
+            <nav class="flex navbar">
+                <div class="flex titlen">
+                    <img src="svg\logomusic.svg" alt="">
+                    <div class="welcome">Welcome To BeatBox Music</div>                    
+                </div>
+                <div class="flex cred">
+                    <button class="sign">Sign Up</button>
+                    <button class="login">Login</button>                
+                </div>
+            </nav>
+            <main class="main">
+                <div class="titles">
+                    BeatBox Albums
+                </div>
+                <div class="cardbox">
+                    <div class="cardcontain flex">
+                        
+                    </div>
+                </div>
+                <div class="flex seekbar">
+                    <div class="songname">
+                        Song Name
+                    </div>
+                    <div class="snav">
+                        <img class="seekicon" id="prev" src="svg\prev.svg" alt="">
+                        <img class="seekicon" id="play" src="svg\play.svg" alt="">
+                        <img class="seekicon" id="next" src="svg\next.svg" alt="">
+                    </div>
+                    <div class=" volume flex">
+                        <img class="seekicon" src="svg\volume.svg" alt="">
+                        <input class="range" type="range">
+                    </div>
+                    <div class="time">
+                        00:00 / 00:00
+                    </div>
+                    <div class="seek">
+                        <div class="thumb"></div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="src/script.js"></script>
+</body>
+
+</html>
