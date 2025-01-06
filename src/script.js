@@ -7,7 +7,7 @@ let currsongs = new Audio();
 
 function getname(names) {
     let newele = decodeURI(names);
-    let temp = `https://api.github.com/repos/anuplohar001/BeatBox/contents/songs/${currFolder}/`;
+    let temp = `../songs/${currFolder}/`;
     let news = newele.replace(temp, " ");
     return news;
 }
@@ -31,8 +31,8 @@ function secondsToMinutesSeconds(seconds) {
 
 async function getSongs(folder) {
     currFolder = folder
-    let song = await fetch(`https://api.github.com/repos/anuplohar001/BeatBox/contents/songs/${folder}/`);
-
+    let song = await fetch(`../songs/${folder}/`);
+    
     let respons = await song.text();
     let div = document.createElement("div");
     div.innerHTML = respons;
@@ -70,9 +70,9 @@ function playselect(songs) {
 
 async function dynamicAlbums() {
 
-    let song = await fetch(`https://api.github.com/repos/anuplohar001/BeatBox/contents/songs`);
-
+    let song = await fetch(`../songs`);
     let respons = await song.text();
+    console.log(respons)
     let div = document.createElement("div");
     div.innerHTML = respons;
     let folders = Array.from(div.getElementsByTagName("a"))
