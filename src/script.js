@@ -1,9 +1,10 @@
+require('dotenv').config();
 let currFolder;
 let currsongs = new Audio();
 let a = document.getElementsByClassName("left");
 let b = document.getElementsByClassName("right");
 let c = document.getElementsByClassName("seekbar");
-const token = "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";
+const token = "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";
 
 function getname(names) {
     let newele = decodeURI(names);
