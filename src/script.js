@@ -3,7 +3,7 @@ let currsongs = new Audio();
 let a = document.getElementsByClassName("left");
 let b = document.getElementsByClassName("right");
 let c = document.getElementsByClassName("seekbar");
-const token = "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";
+const token = "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";
 
 function getname(names) {
     let newele = decodeURI(names);
