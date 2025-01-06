@@ -1,10 +1,8 @@
-require('dotenv').config();
 let currFolder;
 let currsongs = new Audio();
 let a = document.getElementsByClassName("left");
 let b = document.getElementsByClassName("right");
 let c = document.getElementsByClassName("seekbar");
-const token = "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";
 
 function getname(names) {
     let newele = decodeURI(names);
@@ -30,17 +28,18 @@ function secondsToMinutesSeconds(seconds) {
 async function fetchSongs(folder) {
     currFolder = folder;
     try {
-        let response = await fetch(`https://api.github.com/repos/anuplohar001/BeatBox/contents/songs/${folder}`, {
+        let response = await fetch(`https://backend-tfsk.onrender.com/gitfolder/${folder}`, {
+            method: "GET",
             headers: {
-                "Authorization": `token ${token}`
+                "Content-Type": "application/json"
             }
         });
         if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
         let data = await response.json();
-
         let songs = [];
-        data.forEach(item => {
+        data.data.forEach(item => {
             if (item.type === "file" && item.name.endsWith(".mp3")) {
+                // Remove '[SPOTIFY-DOWNLOADER.COM]' from the song name
                 let cleanName = item.name.replace(/\[SPOTIFY-DOWNLOADER\.COM\]/g, "").trim(); // Using regex to remove it
                 songs.push({
                     name: decodeURIComponent(cleanName),  // Decode the song name
@@ -48,7 +47,6 @@ async function fetchSongs(folder) {
                 });
             }
         });
-        console.log(songs);
         displaySongs(songs);
         return songs;
     } catch (error) {
@@ -80,12 +78,15 @@ function playselect(songs) {
 }
 
 async function dynamicAlbums() {
-    let song = await fetch(`https://api.github.com/repos/anuplohar001/BeatBox/contents/songs`,{headers: {
-        "Authorization": `token ${token}`
-    }});
+    let song = await fetch(`https://backend-tfsk.onrender.com/gitsongs`,{
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
     let respons = await song.json();
     let cardc = document.getElementsByClassName("cardcontain")[0];  // Correct element access
-    respons.forEach(e => {
+    respons.data.forEach(e => {
         if (e.name && e.type === "dir") {
             let fname = e.name;
             cardc.innerHTML += `<div data-folder="${fname}" class="flex card">
@@ -153,7 +154,7 @@ async function main() {
         updatesongname(currsongs);
     });
 
-    let seek = document.getElementsByClassName("seek")[0];
+    let seek = document.getElementsByClassName("seek")[0];  // Correct element access
     currsongs.addEventListener("timeupdate", e => {
         document.querySelector(".thumb").style.left = (currsongs.currentTime / currsongs.duration) * 100 + "%";
         document.querySelector(".time").innerHTML = `${secondsToMinutesSeconds(currsongs.duration)} / ${secondsToMinutesSeconds(currsongs.currentTime)}`;
@@ -169,7 +170,7 @@ async function main() {
     });
 
     bar.addEventListener("click", () => {
-        a[0].style.left = '0'; 
+        a[0].style.left = '0';  // Fixed typo 'a' instead of bar
     });
     close.addEventListener("click", () => {
         a[0].style.left = '-5000px';  // Fixed typo 'a' instead of close
