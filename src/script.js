@@ -1,27 +1,24 @@
-
+let currFolder;
+let currsongs = new Audio();
 let a = document.getElementsByClassName("left");
 let b = document.getElementsByClassName("right");
 let c = document.getElementsByClassName("seekbar");
-let currFolder
-let currsongs = new Audio();
+const token = "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";
 
 function getname(names) {
     let newele = decodeURI(names);
-    let temp = `../songs/${currFolder}/`;
+    let temp = `https://raw.githubusercontent.com/anuplohar001/BeatBox/main/songs/${currFolder}/[SPOTIFY-DOWNLOADER.COM]`;
     let news = newele.replace(temp, " ");
     return news;
 }
 
-
 function updatesongname(currsongs) {
-    let songname = document.getElementsByClassName("songname")
-    let temp = getname(currsongs.src)
+    let songname = document.getElementsByClassName("songname");
+    let temp = getname(currsongs.src);
     songname[0].innerHTML = `${temp}`;
 }
 
-
 function secondsToMinutesSeconds(seconds) {
-    // Calculate minutes and seconds
     let minutes = Math.floor(seconds / 60);
     let remainingSeconds = Math.floor(seconds % 60);
     minutes = minutes.toString().padStart(2, '0');
@@ -29,162 +26,150 @@ function secondsToMinutesSeconds(seconds) {
     return `${minutes}:${remainingSeconds}`;
 }
 
-async function getSongs(folder) {
-    currFolder = folder
-    let song = await fetch(`../songs/${folder}/`);
-    
-    let respons = await song.text();
-    let div = document.createElement("div");
-    div.innerHTML = respons;
-    let as = div.getElementsByTagName("a")
-    let songs = []
-    for (let i = 0; i < as.length; i++) {
-        const element = as[i];
-        if (element.href.endsWith(".mp3"))
-            songs.push(element.href);
+async function fetchSongs(folder) {
+    currFolder = folder;
+    try {
+        let response = await fetch(`https://api.github.com/repos/anuplohar001/BeatBox/contents/songs/${folder}`);
+        if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+        let data = await response.json();
+
+        let songs = [];
+        data.forEach(item => {
+            if (item.type === "file" && item.name.endsWith(".mp3")) {
+                // Remove '[SPOTIFY-DOWNLOADER.COM]' from the song name
+                let cleanName = item.name.replace(/\[SPOTIFY-DOWNLOADER\.COM\]/g, "").trim(); // Using regex to remove it
+                songs.push({
+                    name: decodeURIComponent(cleanName),  // Decode the song name
+                    url: item.download_url  // Use download URL
+                });
+            }
+        });
+        console.log(songs);
+        displaySongs(songs);
+        return songs;
+    } catch (error) {
+        console.error('Error fetching songs:', error);
     }
-    console.log(songs)
+}
+
+
+
+function displaySongs(songs) {
     let list = document.getElementById("lists");
-    list.innerHTML = " "
-    for (let index = 0; index < songs.length; index++) {
-        let element = songs[index];
-        let newele = getname(element);
-        list.innerHTML = list.innerHTML + `<li> <img src="svg\\music.svg" alt=""> ${newele} </li>`;
-    }
-    return songs
+    list.innerHTML = "";
+    songs.forEach(song => {
+        list.innerHTML += `<li> <img src="svg/music.svg" alt=""> ${song.name} </li>`;
+    });
 }
 
 function playselect(songs) {
-    let list = document.getElementById("lists")
-    let x = list.getElementsByTagName("li")
+    let list = document.getElementById("lists");
+    let x = list.getElementsByTagName("li");
     for (let i = 0; i < songs.length; i++) {
         x[i].addEventListener('click', () => {
-            console.log(x[i])
-            currsongs.src = songs[i];
+            currsongs.src = songs[i].url;
             updatesongname(currsongs);
             currsongs.play();
-            play.src = "svg\\pause.svg"
-        })
+            document.getElementById("play").src = "svg/pause.svg";
+        });
     }
 }
 
 async function dynamicAlbums() {
-
-    let song = await fetch(`../songs`);
-    let respons = await song.text();
-    console.log(respons)
-    let div = document.createElement("div");
-    div.innerHTML = respons;
-    let folders = Array.from(div.getElementsByTagName("a"))
-
-    for (let index = 0; index < folders.length; index++) {
-        const e = folders[index];
-        if (e.href.includes("/songs/")) {
-            let fname = e.href.split("/").slice(-1)[0]
-            console.log(fname);
-            let cardc = document.getElementsByClassName("cardcontain")
-            cardc[0].innerHTML += `<div data-folder="${fname}" class="flex card">
+    let song = await fetch(`https://api.github.com/repos/anuplohar001/BeatBox/contents/songs`,{headers: {
+        "Authorization": `token ${token}`
+    }});
+    let respons = await song.json();
+    let cardc = document.getElementsByClassName("cardcontain")[0];  // Correct element access
+    respons.forEach(e => {
+        if (e.name && e.type === "dir") {
+            let fname = e.name;
+            cardc.innerHTML += `<div data-folder="${fname}" class="flex card">
                             <img class="one" src="/songs/${fname}/cover.jpg" alt="">
                             <img class="two" src="svg/aplay.svg" alt="">
                             <div class="title">${fname} !</div>
                             <p>Hits to boost your mood and fill you with happened</p>
-                        </div>`
+                        </div>`;
         }
-    }
+    });
 }
 
-
 async function main() {
-
-    let bar = document.getElementsByClassName("bar")
-    let close = document.getElementsByClassName("close")
+    let bar = document.getElementsByClassName("bar")[0];  // Correct element access
+    let close = document.getElementsByClassName("close")[0];  // Correct element access
     let play = document.getElementById("play");
     let prev = document.getElementById("prev");
     let next = document.getElementById("next");
-    let songs = await getSongs("Arijit_Sing")
+    let songs = await fetchSongs("Arijit_Sing");
     let n = songs.length - 1;
 
-    await dynamicAlbums()
+    await dynamicAlbums();
 
-    playselect(songs)
+    playselect(songs);
     Array.from(document.getElementsByClassName("card")).forEach(e => {
-        // console.log(e)
         e.addEventListener("click", async item => {
-            let fName = item.currentTarget.dataset.folder
-            songs = await getSongs(`${fName}`)
+            let fName = item.currentTarget.dataset.folder;
+            songs = await fetchSongs(fName);
             n = songs.length - 1;
-            let aname = document.getElementById("aname")
-            aname.innerText = `Album Name : ${fName}`
-            playselect(songs)
-            bar[0].style.background = 'yellow'
-        })
-    })
+            document.getElementById("aname").innerText = `Album Name : ${fName}`;
+            playselect(songs);
+            bar.style.background = 'yellow';
+        });
+    });
 
     play.addEventListener('click', () => {
         if (currsongs.paused) {
-            play.src = "svg\\pause.svg";
+            play.src = "svg/pause.svg";
             if (!currsongs.src) {
-                currsongs.src = songs[0];
+                currsongs.src = songs[0].url;
                 updatesongname(currsongs);
             }
             currsongs.play();
-        }
-        else {
-            play.src = "svg\\play.svg";
+        } else {
+            play.src = "svg/play.svg";
             currsongs.pause();
         }
-    })
+    });
 
-    //previous
     prev.addEventListener('click', () => {
-        let ind = songs.indexOf(currsongs.src);
+        let ind = songs.findIndex(song => song.url === currsongs.src);
         ind = Math.max(0, ind - 1);
-        currsongs.src = songs[ind];
+        currsongs.src = songs[ind].url;
         currsongs.play();
-        play.src = "svg\\pause.svg";
-        updatesongname(currsongs)
-    })
+        play.src = "svg/pause.svg";
+        updatesongname(currsongs);
+    });
 
-
-    //next
     next.addEventListener('click', () => {
-        let ind = songs.indexOf(currsongs.src);
+        let ind = songs.findIndex(song => song.url === currsongs.src);
         ind = Math.min(n, ind + 1);
-        currsongs.src = songs[ind];
-        console.log(n)
+        currsongs.src = songs[ind].url;
         currsongs.play();
-        play.src = "svg\\pause.svg";
-        updatesongname(currsongs)
-    })
+        play.src = "svg/pause.svg";
+        updatesongname(currsongs);
+    });
 
-    let seek = document.getElementsByClassName("seek")
+    let seek = document.getElementsByClassName("seek")[0];  // Correct element access
     currsongs.addEventListener("timeupdate", e => {
-        document.querySelector(".thumb").style.left = (e.offsetX / e.target.getBoundingClientRect().width * 100) + "%";
-        document.querySelector(".time").innerHTML = `${secondsToMinutesSeconds(currsongs.duration)} / ${secondsToMinutesSeconds(currsongs.currentTime)}`;
         document.querySelector(".thumb").style.left = (currsongs.currentTime / currsongs.duration) * 100 + "%";
-    })
+        document.querySelector(".time").innerHTML = `${secondsToMinutesSeconds(currsongs.duration)} / ${secondsToMinutesSeconds(currsongs.currentTime)}`;
+    });
 
-    seek[0].addEventListener("click", e => {
+    seek.addEventListener("click", e => {
         let percent = e.offsetX / e.target.getBoundingClientRect().width * 100;
-        document.querySelector(".thumb").style.left = (percent + "%");
         currsongs.currentTime = (currsongs.duration * percent) / 100;
-    })
+    });
 
     document.querySelector(".volume").getElementsByTagName("input")[0].addEventListener("change", e => {
-        currsongs.volume = parseInt(e.target.value) / 100
-    })
+        currsongs.volume = parseInt(e.target.value) / 100;
+    });
 
-
-    bar[0].addEventListener("click", () => {
-        a[0].style.left = '0'
-    })
-    close[0].addEventListener("click", () => {
-        a[0].style.left = '-5000px'
-    })
-
-
-
+    bar.addEventListener("click", () => {
+        a[0].style.left = '0';  // Fixed typo 'a' instead of bar
+    });
+    close.addEventListener("click", () => {
+        a[0].style.left = '-5000px';  // Fixed typo 'a' instead of close
+    });
 }
 
-main()
-
+main();
