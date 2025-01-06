@@ -29,14 +29,17 @@ function secondsToMinutesSeconds(seconds) {
 async function fetchSongs(folder) {
     currFolder = folder;
     try {
-        let response = await fetch(`https://api.github.com/repos/anuplohar001/BeatBox/contents/songs/${folder}`);
+        let response = await fetch(`https://api.github.com/repos/anuplohar001/BeatBox/contents/songs/${folder}`, {
+            headers: {
+                "Authorization": `token ${token}`
+            }
+        });
         if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
         let data = await response.json();
 
         let songs = [];
         data.forEach(item => {
             if (item.type === "file" && item.name.endsWith(".mp3")) {
-                // Remove '[SPOTIFY-DOWNLOADER.COM]' from the song name
                 let cleanName = item.name.replace(/\[SPOTIFY-DOWNLOADER\.COM\]/g, "").trim(); // Using regex to remove it
                 songs.push({
                     name: decodeURIComponent(cleanName),  // Decode the song name
@@ -149,7 +152,7 @@ async function main() {
         updatesongname(currsongs);
     });
 
-    let seek = document.getElementsByClassName("seek")[0];  // Correct element access
+    let seek = document.getElementsByClassName("seek")[0];
     currsongs.addEventListener("timeupdate", e => {
         document.querySelector(".thumb").style.left = (currsongs.currentTime / currsongs.duration) * 100 + "%";
         document.querySelector(".time").innerHTML = `${secondsToMinutesSeconds(currsongs.duration)} / ${secondsToMinutesSeconds(currsongs.currentTime)}`;
@@ -165,7 +168,7 @@ async function main() {
     });
 
     bar.addEventListener("click", () => {
-        a[0].style.left = '0';  // Fixed typo 'a' instead of bar
+        a[0].style.left = '0'; 
     });
     close.addEventListener("click", () => {
         a[0].style.left = '-5000px';  // Fixed typo 'a' instead of close
