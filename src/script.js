@@ -11,6 +11,18 @@ function getname(names) {
     return news;
 }
 
+function displayStatusMessage(message) {
+    let statusMessage = document.getElementById("status-message");
+    statusMessage.textContent = message;
+    statusMessage.style.display = message ? "block" : "none";
+}
+
+function displayStatusMessageList(message) {
+    let statusMessage = document.getElementById("list-loader");
+    statusMessage.textContent = message;
+    statusMessage.style.display = message ? "block" : "none";
+}
+
 function updatesongname(currsongs) {
     let songname = document.getElementsByClassName("songname");
     let temp = getname(currsongs.src);
@@ -27,6 +39,7 @@ function secondsToMinutesSeconds(seconds) {
 
 async function fetchSongs(folder) {
     currFolder = folder;
+    displayStatusMessageList("Loading...");
     try {
         let response = await fetch(`https://backend-tfsk.onrender.com/gitfolder/${folder}`, {
             method: "GET",
@@ -48,8 +61,10 @@ async function fetchSongs(folder) {
             }
         });
         displaySongs(songs);
+        displayStatusMessageList("");
         return songs;
     } catch (error) {
+        displayStatusMessageList("Something Went Wrong ...");
         console.error('Error fetching songs:', error);
     }
 }
@@ -78,25 +93,32 @@ function playselect(songs) {
 }
 
 async function dynamicAlbums() {
-    let song = await fetch(`https://backend-tfsk.onrender.com/gitsongs`,{
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json"
-        }
-    });
-    let respons = await song.json();
-    let cardc = document.getElementsByClassName("cardcontain")[0];  // Correct element access
-    respons.data.forEach(e => {
-        if (e.name && e.type === "dir") {
-            let fname = e.name;
-            cardc.innerHTML += `<div data-folder="${fname}" class="flex card">
-                            <img class="one" src="/songs/${fname}/cover.jpg" alt="">
-                            <img class="two" src="svg/aplay.svg" alt="">
-                            <div class="title">${fname} !</div>
-                            <p>Hits to boost your mood and fill you with happened</p>
-                        </div>`;
-        }
-    });
+    displayStatusMessage("Loading...");
+    try {
+        let song = await fetch(`https://backend-tfsk.onrender.com/gitsongs`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        let respons = await song.json();
+        let cardc = document.getElementsByClassName("cardcontain")[0];
+        respons.data.forEach(e => {
+            if (e.name && e.type === "dir") {
+                let fname = e.name;
+                cardc.innerHTML += `<div data-folder="${fname}" class="flex card">
+                                <img class="one" src="/songs/${fname}/cover.jpg" alt="">
+                                <img class="two" src="svg/aplay.svg" alt="">
+                                <div class="title">${fname} !</div>
+                                <p>Hits to boost your mood and fill you with happened</p>
+                            </div>`;
+            }
+        });
+    } catch (error) {
+        displayStatusMessage("Something Went Wrong ...");
+        console.error('Error fetching songs:', error);
+    }
+    displayStatusMessage("");
 }
 
 async function main() {

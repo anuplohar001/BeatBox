@@ -50,6 +50,15 @@
     height: 82vh;
 }
 
+.loader {
+    margin-left: 90px;
+}
+
+.status-albums {
+    margin: 100px;
+    margin-left: 400px;
+}
+
 .cardcontain {
     margin: 15px;
     flex-wrap: wrap;
